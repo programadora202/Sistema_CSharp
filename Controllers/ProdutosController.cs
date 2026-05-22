@@ -56,7 +56,7 @@ namespace MoveisCarrara.Controllers
                 return RedirectToAction("Index");
             }
 
-            return View(Produto);
+            return View(produto);
         }
 
         // GET /TipoProdutos/Edit/5

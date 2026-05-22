@@ -19,5 +19,15 @@ namespace MoveisCarrara.Models
         [StringLength(100)]
         [Column("nome_material")]
         public string NomeMaterial { get; set; } = "";
+
+        [Required]
+        [StringLength(200)]
+        [Column("descricao")]
+
+        public string Descricao { get; set; } = "";
+
+        [Column("preco", TypeName = "decimal(10,2)")]
+
+        public decimal Preco { get; set; }
     }
 }

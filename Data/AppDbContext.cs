@@ -22,8 +22,8 @@ namespace MoveisCarrara.Data
         public DbSet<Material>         Materiais         { get; set; }
         public DbSet<Venda>            Vendas            { get; set; }
         public DbSet<Compra>           Compras           { get; set; }
-        public DbSet<Venda_Produto> VendaProdutos { get; set; }
-        public DbSet<Compra_Material> CompraMateriais { get; set; }
+        public DbSet<Venda_produto> VendaProdutos { get; set; }
+        public DbSet<CompraMaterial> CompraMateriais { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -75,14 +75,14 @@ namespace MoveisCarrara.Data
             });
 
             // Chave primária composta: (venda_codigo, item)
-            modelBuilder.Entity<Vendas_Produto>(entity =>
+            modelBuilder.Entity<Venda_produto>(entity =>
             {
                 entity.HasKey(v => new { v.VendaCodigo, v.Item });
                 entity.ToTable("vendas_produtos");
             });
 
             // COMPRAS_MATERIAIS
-            modelBuilder.Entity<Compra_Material>(entity =>
+            modelBuilder.Entity<CompraMaterial>(entity =>
             {
                 entity.ToTable("compras_materiais");
                 entity.HasKey(c => new{c.CompraCodigo, c.Item});

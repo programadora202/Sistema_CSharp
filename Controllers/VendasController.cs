@@ -25,7 +25,7 @@ namespace MoveisCarrara.Controllers
         {
             ViewBag.Clientes     = await _context.Clientes.Include(c => c.Pessoa).ToListAsync();
             ViewBag.Funcionarios = await _context.Funcionarios.Include(f => f.Pessoa).ToListAsync();
-            ViewBag.Produtos     = await _context.TipoProdutos.OrderBy(p => p.NomeProduto).ToListAsync();
+            ViewBag.Produtos     = await _context.Produtos.OrderBy(p => p.NomeProduto).ToListAsync();
         }
 
         // GET /Vendas/Index
@@ -78,21 +78,21 @@ namespace MoveisCarrara.Controllers
                 _context.Vendas.Add(venda);
                 await _context.SaveChangesAsync();
 
-                // 2) Grava os itens em vendas_tipo_produtos
+                // 2) Grava os itens em vendas_produtos
                 for (int i = 0; i < itemProdutoId.Count; i++)
                 {
                     if (itemProdutoId[i] == 0) continue; // linha vazia
 
-                    var item = new VendaTipoProduto
+                    var item = new Venda_produto
                     {
                         VendaCodigo      = venda.Codigo,
-                        TipoProdutoCodigo = itemProdutoId[i],
+                        ProdutoCodigo = itemProdutoId[i],
                         Item             = i + 1,
                         Qtd              = itemQtd[i],
                         Preco            = itemPreco[i],
                         Dimensoes        = itemDimensoes.Count > i ? itemDimensoes[i] : null
                     };
-                    _context.VendaTipoProdutos.Add(item);
+                    _context.VendaProdutos.Add(item);
                 }
 
                 await _context.SaveChangesAsync();
@@ -117,7 +117,7 @@ namespace MoveisCarrara.Controllers
             if (venda == null) return NotFound();
 
             // Carrega os itens existentes desta venda
-            var itens = await _context.VendaTipoProdutos
+            var itens = await _context.VendaProdutos
                 .Where(i => i.VendaCodigo == id)
                 .OrderBy(i => i.Item)
                 .ToListAsync();
@@ -156,24 +156,24 @@ namespace MoveisCarrara.Controllers
                 _context.Vendas.Update(venda);
 
                 // Remove os itens antigos e regrava
-                var itensAntigos = _context.VendaTipoProdutos.Where(i => i.VendaCodigo == id);
-                _context.VendaTipoProdutos.RemoveRange(itensAntigos);
+                var itensAntigos = _context.VendaProdutos.Where(i => i.VendaCodigo == id);
+                _context.VendaProdutos.RemoveRange(itensAntigos);
                 await _context.SaveChangesAsync();
 
                 for (int i = 0; i < itemProdutoId.Count; i++)
                 {
                     if (itemProdutoId[i] == 0) continue;
 
-                    var item = new VendaTipoProduto
+                    var item = new Venda_produto
                     {
                         VendaCodigo       = id,
-                        TipoProdutoCodigo = itemProdutoId[i],
+                        ProdutoCodigo = itemProdutoId[i],
                         Item              = i + 1,
                         Qtd               = itemQtd[i],
                         Preco             = itemPreco[i],
                         Dimensoes         = itemDimensoes.Count > i ? itemDimensoes[i] : null
                     };
-                    _context.VendaTipoProdutos.Add(item);
+                    _context.VendaProdutos.Add(item);
                 }
 
                 await _context.SaveChangesAsync();
@@ -181,7 +181,7 @@ namespace MoveisCarrara.Controllers
                 return RedirectToAction("Index");
             }
 
-            var itensExistentes = await _context.VendaTipoProdutos
+            var itensExistentes = await _context.VendaProdutos
                 .Where(i => i.VendaCodigo == id)
                 .OrderBy(i => i.Item)
                 .ToListAsync();
@@ -199,8 +199,8 @@ namespace MoveisCarrara.Controllers
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
 
             // Remove itens antes de remover a venda (FK)
-            var itens = _context.VendaTipoProdutos.Where(i => i.VendaCodigo == id);
-            _context.VendaTipoProdutos.RemoveRange(itens);
+            var itens = _context.VendaProdutos.Where(i => i.VendaCodigo == id);
+            _context.VendaProdutos.RemoveRange(itens);
 
             var venda = await _context.Vendas.FindAsync(id);
             if (venda != null) _context.Vendas.Remove(venda);
